@@ -652,4 +652,54 @@ by each other.
 
 **Execution time**: trivial.
 
+
+## Day 16 "Reindeer Maze"
+
+_Difficult.  Had to look up A* algorithm that I don't remember ever actually implementing,
+then took a long time to debug second subproblem._
+
+**Problem 1**: the input is a rectangular block of text with a map of a maze, with `.`
+marking floors and `#` marking walls.  `S` marks the starting spot and `E` ending spot.
+A "reindeer" must find a way from `S` to `E` for the lowest possible cost.  Reindeer's
+position is determined not only by coordinates but also by orientation
+(north/west/east/south); the reindeer always starts walking facing east.  A step forward
+costs 1 point, but a 90 degrees turn in any direction costs 1000 points.  The output
+must be the lowest possible cost of the way from `S` to `E`.
+
+**Solution 1**: this is more or less a classic pathfinding problem, with turns as separate
+actions adding a small twist.  I implemented the A* algorithm, using C++'s
+priority queue template and a distance estimation function that simply adds up X and Y
+differences of current coordinates with the ending ones.  I was broadly aware of this
+algorithm and knew to start with it, but I don't remember ever having to actually implement
+it myself, so this was actually rather educational.  To calculate new positions I have a
+table of 12 possible moves (simple move forward or turn + move).  I keep a backtracking
+map for visualization (commented out).  Generally I guess a rather straightforward task.
+
+Afterwards, reading Reddit I did realize that A* doesn't help much over more straightforward
+Dijkstra in this particular puzzle because the distance estimation function is actually
+a quite poor fit here, since turns are massively more expensive than moves.  Oh well.
+In any case it runs in milliseconds and I now remember how A* is supposed to work.
+
+**Problem 2**: instead of just finding the lowest possible cost, find all possible routes
+between `S` and `E` which have the same, lowest possible, cost.  With test inputs and
+the real big input this in practice means a few places where the route splits in two
+or more and soon merges back again.  Count all distinct map squares visited on all
+routes (including `S` and `E` squares themselves).
+
+**Solution 2**: this was an annoying one and took fairly long time to debug, but I guess
+conceptually it's rather simple.  Finding all possible routes means we can downgrade
+from A* to Dijkstra and first calculate costs for every (x, y, direction) tuple that
+is accessible from the starting point.  (After reaching finish, we can trim squares
+that result in cost greater than for finish.)
+
+On the second step, we start from the ending position(s) and flood-fill, backtracking
+along those tuples according to problem's rules, and marking previously unvisited squares
+on the way.  A minor complication here is that the ending position can be reached
+from any possible direction, so we may need to start not from one but from several ending
+positions, differing only in direction, as long as all of them have the same minimal cost, calculated on the first step.
+
+**Execution time**: about 25 ms.  Probably could be improved by using better data
+structures.
+
+
 ## To be continued
