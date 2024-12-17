@@ -702,4 +702,53 @@ positions, differing only in direction, as long as all of them have the same min
 structures.
 
 
+## Day 17 "Chronospatial Computer"
+
+_Difficult._
+
+**Problem 1**: the task is to implement a simple virtual machine.  It has three registers
+(A, B, C) which can hold arbitrary integer values, an instructions vector containing numbers
+between 0 and 7, an output vector and an instructions counter.  Initial register values
+and instructions vector are specified in the input.  The program starts at instruction
+counter 0 and ends when the counter moves outside the instructions vector.  All instructions
+in the vector are followed by an operand, which depending on the instruction may by a literal
+(0...7) or a combo one (0...3 for literal 0...3 values, 4 = A, 5 = B, 6 = C register, 7 is
+unused).  The instructions are: 
+
+* 0 (adv): A = A >> combo
+* 1 (bxl): B = B ^ literal
+* 2 (bst): B = combo % 8
+* 3 (jnz): if A != 0, jump to PC = literal
+* 4 (bxc): B = B ^ C (operand ignored)
+* 5 (out): add value of B % 8 to output vector
+* 6 (bdv): B = A >> combo
+* 7 (cdv): C = A >> combo
+
+Execute the input program and print the resulting output vector.
+
+**Solution 1**: nothing interesting here, the solution just follows the instructions.
+
+**Problem 2**: given a program, find the lowest possible positive initial value of A register
+so that after running the program the output vector would be equal to instructions vector,
+i. e. the program replicates its own "code".
+
+**Solution 2**: this probably cannot be efficiently solved for a general case.
+The test input for this subproblem can be easily bruteforced (the expected result is
+only 117440), but the answer for the real input is a 48 bit long number, so maybe not 
+impossible but certainly not feasible to test.
+
+So the solution had to be specific for this particular input (and it works with it but
+does not work with the test input).  It came down to long and arduous examination of the input
+program with pen and paper, and noticing that every three bits (starting from lowest ones)
+of the A register correspond to one number in the output (starting from the beginning),
+and since on each iteration of the program A gets shifted right by three bits and B and C
+are overwritten, the problem is recursive, i. e. if A produces a sequence A', then A with 
+three more bits added the end would produce a sequence N, A'.  Knowing this it's easy
+to write a recursive solving algorithm which starts at the end of the instructions vector,
+the tricky part is realizing this (and also some debugging, spent too much time on an int
+that should have been a long long).
+
+**Execution time**: trivial.
+
+
 ## To be continued
