@@ -751,4 +751,32 @@ that should have been a long long).
 **Execution time**: trivial.
 
 
+## Day 18 "RAM Run"
+
+_Medium (fairly simple even as I could copy/paste some from day 16)._
+
+**Problem 1**: the input is a list of coordinates of obstacles on a map.  The map size
+is known beforehand.  The task is to take only first N of these obstacles (N is also known
+beforehand), place them on a map, find the shortest path from its left top (0, 0) to
+bottom right corner (assuming only horizontal and vertical moves), and output the length
+of that path.
+
+**Solution 1**: this is basically the simplest possible pathfinding task on a map grid,
+so I just borrowed the A* pathfinding algorithm implementation from day 16 problem 1;
+it only had to be simplified.  Width/height and number of coordinates to take are provided
+as command line arguments to avoid hardcoding.
+
+**Problem 2**: starting with an empty map, begin placing obstacles from the 
+coordinate list one by one until the path from left top to bottom right becomes impossible.
+Output the coordinate of the obstacle which was the final one that made the path impossible.
+
+**Solution 2**: pathfinding from solution 1 is pretty efficient already, the coordinates
+list in the input has is 3449 lines long and the correct answer is a bit under 3000,
+so it is possible to just bruteforce (which took 3.8 seconds on my machine).  However
+a further easy drastic speedup can be achieved by just not starting from zero but
+doing a binary search for the result, which is what I did.
+
+**Execution time**: a few milliseconds.
+
+
 ## To be continued
