@@ -766,6 +766,9 @@ so I just borrowed the A* pathfinding algorithm implementation from day 16 probl
 it only had to be simplified.  Width/height and number of coordinates to take are provided
 as command line arguments to avoid hardcoding.
 
+Postfactum/after reading Reddit realized that simpler BFS algorithm is probably better
+in this case (and for second subproblem two), but anyway this runs near-instantly as it is.
+
 **Problem 2**: starting with an empty map, begin placing obstacles from the 
 coordinate list one by one until the path from left top to bottom right becomes impossible.
 Output the coordinate of the obstacle which was the final one that made the path impossible.
@@ -777,6 +780,43 @@ a further easy drastic speedup can be achieved by just not starting from zero bu
 doing a binary search for the result, which is what I did.
 
 **Execution time**: a few milliseconds.
+
+
+## Day 19 "Linen Layout"
+
+_Medium._
+
+**Problem 1**: the input is a list of words ("towel stripe patterns", which may consist
+only of five different letters, "tower colors"), in a line separated with `, `; then an
+empty line and a list of much longer words/sequences ("towel designs").  The goal is
+to output the number of sequences from the list that can be concatenated from the given words.
+Words can be used multiple times and in any order.
+
+**Solution 1**: I don't know if there's any better algorithm but a recursive bruteforcey
+solution works fine.  We pre-sort the word list, remember maximum possible word length,
+and for each iteration of the algorithm get sequence's prefixes of length from 1 to
+maximum possible word length, and do a binary search on word list to determine
+if that prefix is a valid word.  If yes, remove that prefix and recurse; if sequence
+reached zero length, then a solution was found, pass that result up the stack.
+We keep a vector of used words but just for commented-out visualization, since words can
+be reused.
+
+**Problem 2**: instead of just determining if a solution is possible, add up the numbers
+of all possible solutions for every given sequence.
+
+**Solution 2**: did not require much change; just keep a number of times the sequence
+reached zero length when recursing, instead of exiting when the first solution was found.
+This by itself would lead to hugely unreasonable running times (the correct answer for
+the provided input here is in hundreds of trillions, and preventively change to long longs
+was again a wise choice), but can be very easily remedied by just keeping a cache
+(unordered map of subsequence -> answer for it).  Since subsequences are rather repetitive,
+most words short, and every subsequence will always give the same result, this works just
+fine (if for example each word could only ever be used once, that would have
+complicated things greatly).  A bit of further optimization is possible by using
+`std::string_view` instead of copying strings.  Memory usage is not unreasonable either,
+seems to be about 4 MB according to `/usr/bin/time -v`.
+
+**Execution time**: 7-11 ms.
 
 
 ## To be continued
